@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall Assignment</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <h2>CodingDojo Wall</h2>
+            <h4>Welcome {{ user.first_name }}</h4>
+            <a href="/wall/logout">Log Out</a>
+        </div>
+        <div>
+            <form action="/wall/" method="POST">
+                {% csrf_token %}
+                <label>Post a message</label>
+                <textarea name="message"></textarea>
+                <button type="submit">Post a Message</button>
+            </form>
+            {% for mess in all_messages %}
+            <p>{{mess.user.first_name}} {{mess.user.last_name}} - {{mess.updated_at}}</p>
+            <p>{{mess.message}}</p>
+            {% if mess.user.id == request.session.user_id and mess.created_at > current_time_offset %}
+            <a href="/wall/delete_message/{{mess.id}}">Delete Message</a>
+            {% endif %}
+            {% for comm in mess.comments.all %}
+            <p>{{comm.user.first_name}} {{comm.user.last_name}} - {{comm.updated_at}}</p>
+            <p>{{comm.comment}}</p>
+            {% endfor %}
+            <form action="/wall/{{mess.id}}/comment" method="POST">
+                {% csrf_token %}
+                <label>Post a comment</label>
+                <textarea name="comment"></textarea>
+                <button type="submit">Post a Comment</button><br><br><br><br><br>
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>

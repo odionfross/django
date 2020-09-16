@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dojo Survey Revisited</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <div id="container">
+        <h1>Submitted Info</h1>
+        <p>Name: {{request.session.name}}</p>
+        <p>Dojo Location: {{request.session.loc}}</p>
+        <p>Favorite Language: {{request.session.lang}}</p>
+        <p>Comment: {{request.session.comment}}</p>
+    </div>
+</body>
+
+</html>

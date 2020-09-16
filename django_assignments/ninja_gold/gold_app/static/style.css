@@ -1,0 +1,29 @@
+#wrapper{
+    width: 900px;
+    margin: 0px auto;
+}
+
+.top_content h3, .top_content p{
+    display: inline-block;
+    vertical-align: middle;
+}
+.gold{
+    border: 1px solid black;
+    width: 200px;
+    height: 25px;
+}
+
+div form{
+    display: inline-block;
+    border: 1px solid black;
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 150px;
+}
+
+.activity{
+    border: 1px solid black;
+    width: 850px;
+    height: 200px;
+}

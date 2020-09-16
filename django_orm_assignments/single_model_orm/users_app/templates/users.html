@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C+R Users</title>
+    {% load static %}
+    <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+    <style>
+        #wrapper {
+            width: 900px;
+            margin: 0px auto;
+            text-align: center;
+            font-family: sans-serif;
+        }
+        table {
+            width:100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div>
+            <h1>All the Users</h1>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                </tr>
+                {% for user in all_users %}
+                <tr>
+                    <td>{{user.id}}</td>
+                    <td>{{user.first_name}} {{user.last_name}}</td>
+                    <td>{{user.email_address}}</td>
+                    <td>{{user.age}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <h1>Add a User</h1>
+            <form action="/add_user" method="POST">
+                {% csrf_token %}
+                <p>First Name</p><input name="f_name">
+                <p>Last Name</p><input name="l_name">
+                <p>Email</p><input name="email_address">
+                <p>Age</p><input name="age">
+                <input type="submit" value="Add">
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

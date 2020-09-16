@@ -1,0 +1,278 @@
+
+Change to a virtual environment
+
+$ cd Documents/CodingDojo/python_stack/
+
+$ source v_environments/python_env/bin/activate
+
+(python_env) $ cd django/django_assignments/
+
+
+-----------------------------
+
+(python_env) Odions-MacBook-Pro:django odionfross$ ls
+django_fundamentals	django_orm
+django_intro
+
+(python_env) Odions-MacBook-Pro:django odionfross$ mkdir django_assignments
+
+(python_env) Odions-MacBook-Pro:django odionfross$ cd django_assignments/
+
+
+---------------------------
+
+Create a new project
+(python_env) Odions-MacBook-Pro:django_assignments odionfross$ django-admin startproject project_name
+
+
+Change directory
+(python_env) Odions-MacBook-Pro:django_assignments odionfross$ cd project_name
+
+
+Create a new app
+(python_env) Odions-MacBook-Pro:time_display odionfross$ python manage.py startapp app_name
+
+
+Open project in code editor
+(python_env) Odions-MacBook-Pro:time_display odionfross$ code .
+
+
+Change project settings.py to include installed app (to make sure project is talking to the application)
+	'app_name',
+
+
+Change project urls.py to 1. Include 2. Change app path to app_name.urls. This step customizes the urls patterns to look at the desired app urls
+	
+	from django.urls, import path, include	#<- include the include
+	
+	path('', include('app_name.urls')),	#<- include the include + ' '
+
+
+Create app files and directories
+	(project) cd app_name
+	(project) touch urls.py
+	(project) mkdir templates
+	(app) cd templates
+	(templates) touch index.html
+	(app) cd ..
+	(project) cd ..
+	(project) ls #should show manage.py, app_name, and project_name
+
+
+Edit urls.py file so when app gets a request for localhost:8000 (root domain), we call a method called index in our views  
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+	path('', views.index)
+]
+
+
+Edit the views.py to add the method from the urls.py file. This is where the server looks for the method. The example below renders the html page
+
+def index(request):
+	context = {
+		"time": "12:30 PM"
+	}
+	return render(request, 'index.html', context)
+
+
+Edit HTML file index.html
+
+<h1> Currrent Time: {{time}}<h1>
+
+<form action="/process" method='POST'>
+	Location: <select name='location'>
+		<option value="python">Python</option>
+		<option value="c#">C#</option>
+		<option value="java">Java</option>
+		<option value="javascript">Javascript</option>
+	</select>
+	<input type="submit" value="View User">
+</form>
+
+Note: in a form, the action is the request that is made whenever the form is submitted (i.e., user clicks the submit button).  In this above example, when user submit the form, the request that is made is /process and it has to be handled in the urls.py file.
+Also, the name in all the form fields (the inout) is how we reference whatever value that use chose from the form that is sent back to the server.
+
+
+Start the Server
+(project) python manage.py runserver
+
+
+
+POST Request - separate the method that handles the POST request from the method that renders the page.
+The method that handles the POST request should be redirected to the route that renders the page. E.g.,
+
+from django.shortcuts import render, redirect # don't forget to import redirect!
+    
+def create_user(request):
+	print("Got POST data!")
+    name = request.POST['name']
+    email = request.POST['email']
+    return redirect('/')	# changed this line!
+    
+# adding this method
+def index(request):
+    print('got here from redirect!')
+    return render(request, 'index.html')
+
+
+
+
+Integrating sessions
+Django uses the database to manage session, so we'll need to update our database to allow for it to start maintaining session data for us. To do this, we'll run the following command from within a Django project in our terminal:
+
+(project) python manage.py migrate
+
+
+Now we can implement session! Not only does session data persist across redirects, we can also view session data on our template without a context object. To use session, we can refer to it in our views.py file. Session is a dictionary to which we can add and retrieve values via keys, like so:
+
+(project) open some_app/views.py
+
+
+def some_function(request):
+    request.session['name'] = request.POST['name']
+    request.session['counter'] = 100
+
+We can also access session directly in our Django templates. Django templates do not process square brackets, so we'll use dot notation instead:
+
+<p>Name in session is: {{request.session.name}}</p>
+
+
+Session Breakdown:
+request.session['key'] = 'value'
+Stores 'value' in request.session['key'].
+
+if 'key' in request.session
+Useful for testing if key is in request.session or not.
+
+{{ request.session.name }}
+Use dot notation . to access request.session keys from templates, square brackets [] aren’t allowed there.
+
+del request.session['key']
+Deletes a session key if it exists, throws a KeyError if it doesn’t.
+
+request.session.flush()
+Clears all data from session.
+
+
+
+
+
+
+------------ ORM
+
+Now, in a new Django project, open up your models.py file and put the following model there:
+
+class Wizard(models.Model):
+    name = models.CharField(max_length=45)
+    house = models.CharField(max_length=45)
+    pet = models.CharField(max_length=45)
+    year = models.IntegerField()
+
+
+Once you have the model, run the two migration commands in your terminal and open the shell:
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py shell
+
+
+>> from app_name.models import *.  (e.g. from wizardapp.models import *)
+
+
+SQL to ORM
+1. Creating a new record
+ClassName.objects.create(field1="value for field1", field2="value for field2", etc.)
+
+a. INSERT INTO Wizard (name, house, pet, year) VALUES ('Harry Potter', 'Gryffindor', 'Hedwig', '5');
+Wizard.objects.create(name="Harry Potter", house="Gryffindor", pet="Hedwig", year=5)
+
+b. INSERT INTO Wizard (name, house, pet, year) VALUES ('Hermione Granger', 'Gryffindor', 'Crookshanks', '5');
+Wizard.objects.create(name="Hermione Granger", house="Gryffindor", pet="Crookshanks", year=5)
+
+
+2. Get records
+ClassName.objects.get(id=1) - gets the record in the table with the specified id
+
+a. SELECT * FROM Wizard WHERE id = 1;
+Wizard.objects.get(id=1)
+
+b. ClassName.objects.filter(field1="value for field1", etc.) - gets any records matching the query provided
+SELECT * FROM Wizard WHERE house = 'Gryffindor';
+Wizard.objects.filter(house = 'Gryffindor')
+
+ClassName.objects.all() - gets all the records in the table
+
+
+3. Updating an existing record
+c = ClassName.objects.get(id=1)
+c.field_name = "some new value for field_name"
+c.save()
+
+UPDATE Wizard SET year = '6' WHERE id = 1;
+new_year = Wizard.objects.get(id=1)
+new_year.year = 6
+new_year.save()
+
+
+Other Queries
+Displaying records
+ClassName.objects.get(id=1).__dict__ - shows all the values of a single record as a dictionary
+ClassName.objects.all().values() - shows all the values of a QuerySet (i.e. multiple instances)
+
+Ordering records
+ClassName.objects.all().order_by("field_name") - orders by field provided, ascending
+ClassName.objects.all().order_by("-field_name") - orders by field provided, descending
+
+
+
+SQL to ORM
+
+1.
+Wizard.objects.create(name="Luna Lovegood", house="Ravenclaw", pet="None", year="4")
+
+INSERT INTO Wizard (name, house, pet, year) VALUES ('Luna Lovegood', 'Ravenclaw', 'None', '4');
+
+2.
+Wizard.objects.create(name="Padma Patil", house="Ravenclaw", pet="None", year="5")
+
+INSERT INTO Wizard (name, house, pet, year) VALUES ('Padma Patil', 'Ravenclaw', 'None', '5');
+
+3.
+ravenclaws = Wizard.objects.filter(house="Ravenclaw")
+
+SELECT * FROM Wizard WHERE house = 'Ravenclaw';
+
+4.
+luna = Wizard.objects.get(name="Luna Lovegood")
+luna.year = 5
+luna.save()
+
+UPDATE Wizard SET year = 5 WHERE name = 'Luna Lovegood';
+
+--- OLD ---
+
+From the CLI 
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ python manage.py runserver
+
+Quit the server with CONTROL-C.
+
+
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ open time_display/settings.py 
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ open time_display/urls.py 
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ touch time_display_app/urls.py
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ open time_display_app/urls.py
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ open time_display_app/views.py
+
+(python_env) Odions-MacBook-Pro:time_display odionfross$ python manage.py runserver
+
+
+

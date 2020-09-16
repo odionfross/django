@@ -1,0 +1,15 @@
+#wrapper{
+    margin: 5px auto;
+    width: 900px;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+p {
+    display: inline-block;
+    border: 1px solid black;
+}
+
+h1{
+    border: 1px solid black;
+}

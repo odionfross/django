@@ -1,0 +1,24 @@
+body {
+    padding: 2em;
+    background-color: #EEDDEE;
+    font-family: sans-serif;
+}
+
+/* #wrapper{
+    margin: 5px auto;
+    width: 900px;
+    text-align: center;
+    font-family: sans-serif;
+} */
+
+/* form, div#container {
+    padding: 2em;
+} */
+
+/* div#container span {
+    font-weight: bold;
+} */
+
+#container > h1 {
+    border-bottom: solid 1px black;
+}

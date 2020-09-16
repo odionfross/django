@@ -1,0 +1,237 @@
+
+
+================================= VIRTUAL ENVIRONMENT =================================
+
+Change to a virtual environment
+
+$ cd Documents/CodingDojo/python_stack/
+
+$ source v_environments/python_env/bin/activate
+
+(python_env) $ cd django/django_assignments/
+
+
+
+====================================== SHELL =========================================
+
+
+$ django-admin startproject dojo_ninjas_proj
+
+$ cd dojo_ninjas_proj/
+
+$ python manage.py startapp dojo_ninjas_app
+
+Modified settings.py to include the new app. No need to update modify project level urls.py or create an app level url.py while working manipulating the ORM in the shell.
+
+$ python manage.py runserver
+
+
+Project Deliverables
+--------------------
+
+- Create the Dojo class model
+
+class Dojo(models.Model):
+    name = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+- Create the Ninja class model
+
+class Ninja(models.Model):
+    dojo = models.ForeignKey(Dojo, related_name="ninjas", on_delete = models.CASCADE)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+- Create and run the migration files to create the tables in your database
+
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+
+- Create a .txt file where you'll save each of your queries from below
+
+-- Run the shell and import your models
+
+$ python manage.py shell
+>>> from dojo_ninjas_app.models import *
+
+
+1. Query: Create 3 new dojos  
+>>> Dojo.objects.create(name="Coding Dojo", city="Seattle", state="WA")
+>>> Dojo.objects.create(name="General Assembly", city="San Jose", state="CA")
+>>> Dojo.objects.create(name="Open Classrooms", city="New York", state="NY")
+
+
+2. Query: Delete the 3 dojos you just created
+>>> Dojo.objects.get(id=1).delete()
+>>> Dojo.objects.get(id=2).delete()
+>>> Dojo.objects.get(id=3).delete()
+
+
+3. Query: Create 3 more dojos
+>>> Dojo.objects.create(name="Code Fellows", city="New York", state="NY")
+>>> Dojo.objects.create(name="Flatiron", city="San Francisco", state="CA")
+>>> Dojo.objects.create(name="Fullstack Academy", city="Boston", state="MA")
+
+
+4. Query: Create 3 ninjas that belong to the first dojo
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=4), first_name="Odion", last_name="Fross")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=4), first_name="Zeb", last_name="Fross")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=4), first_name="Eddie", last_name="White")
+
+
+5. Query: Create 3 ninjas that belong to the second dojo
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=5), first_name="Jon", last_name="Vanderhok")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=5), first_name="Robin", last_name="Janski")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=5), first_name="Emily", last_name="Fross")
+
+
+6. Query: Create 3 ninjas that belong to the third dojo
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=6), first_name="Chari", last_name="Akin")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=6), first_name="Susan", last_name="Smith")
+>>> Ninja.objects.create(dojo=Dojo.objects.get(id=6), first_name="Junmi", last_name="Yohan")
+
+
+7. Query: Retrieve all the ninjas from the first dojo
+>>> Dojo.objects.first().ninjas.all()	# reverse look up from Dojo class
+Dojo.objects.first().ninjas.values()
+Dojo.objects.get(id=4).ninjas.all() #reverse look up from Dojo class + need to know the id
+Dojo.objects.get(id=4).ninjas.values()
+Ninja.objects.filter(dojo=Dojo.objects.first()).values() # using filters	
+
+
+8. Query: Retrieve all the ninjas from the last dojo
+>>> Dojo.objects.last().ninjas.all() 	# reverse look up from Dojo class
+Dojo.objects.last().ninjas.values()
+Dojo.objects.get(id=6).ninjas.all() #reverse look up from Dojo class + need to know the id
+Dojo.objects.get(id=6).ninjas.values()
+Ninja.objects.filter(dojo=Dojo.objects.last()).values()	# using filters
+
+
+9. Query: Retrieve the last ninja's dojo
+>>> Ninja.objects.last().dojo.name
+>>> Ninja.objects.get(id=9).dojo.name	# if I know the id of the ninja
+
+
+10. Add a new text field called "desc" to your Dojo class
+desc = models.TextField()	# terminal prompts for default value so changed to
+desc = models.TextField(null=True)
+
+
+11. Create and run the migration files to update the table in your database. If needed, provide a default value of "old dojo"
+$ python manage.py makemigrations
+$ python manage.py migrate
+$ python manage.py shell
+>>> from dojo_ninjas_app.models import *
+
+12. Query: Create a new dojo
+>>> Dojo.objects.create(name="Code Belt", city="West Seattle", state="WA", desc="This location has a mountain and an ocean view")
+
+>>> Dojo.objects.get(id=7).__dict__
+
+
+---
+
+Retrieving all ninjas in a dojo
+>>> Dojo.objects.all()[0].ninjas.all()[0].first_name
+
+Dynamically in the template
+<h1>All the Dojos</h1>
+        {% for dojo in all_dojos %}
+            <h4>Ninjas at the {{dojo.name}}</h4>
+            {% for ninja in dojo.ninjas.all %}
+                <ul>{{ninja.first_name}}</ul>
+            {% endfor %}
+        {% endfor %}
+
+
+To retrieve all the Dojo's Query Set
+Dojo.objects.all().values()
+
+How do I retrieve the individual value of the query?
+I believe you'll need to loop through the query set
+
+To retrieve all the Ninja's Query Set
+Ninja.objects.all().values()
+
+- different project
+Query: Change the user with id=3 so their last name is Pancakes.
+>>> update_user = User.objects.get(id=3)
+>>> update_user.last_name = "Pancakes"
+>>> update_user.save()
+
+Query: Delete the user with id=2 from the database
+>>> delete_user = User.objects.get(id=2)
+>>> delete_user.delete()
+
+Query: Get all the users, sorted by their first name (in ascending order)
+>>> User.objects.all().order_by("first_name").values()
+
+BONUS Query: Get all the users, sorted by their first name in descending order
+>>> User.objects.all().order_by("-first_name").values()
+
+
+
+================================= FULL-STACK APPLICATION =================================
+
+
+Change project urls.py to 1. Include 2. Change app path to app_name.urls. This step customizes the urls patterns to look at the desired app urls
+	
+	from django.urls, import path, include	#<- include the include
+	
+	path('', include('app_name.urls')),	#<- include the include + ' '
+
+
+Create app files and directories
+	(project) cd app_name
+	(project) touch urls.py
+	(project) mkdir templates
+	(app) cd templates
+	(templates) touch index.html
+	(app) cd ..
+	(project) cd ..
+	(project) ls #should show manage.py, app_name, and project_name
+
+
+Edit urls.py file so when app gets a request for localhost:8000 (root domain), we call a method called index in our views  
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+	path('', views.index)
+]
+
+Edit the views.py to add the method from the urls.py file. This is where the server looks for the method. The example below renders the html page
+
+from .models import *
+
+def index(request):
+    # retrieve and ninjas in the dojo
+    context = {
+        'all_dojos': Dojo.objects.all()
+    }
+    return render(request, 'index.html')
+
+
+Edit HTML file index.html and add some content
+
+
+Start the Server
+(project) python manage.py runserver
+
+
+
+
+
+
+
+
+

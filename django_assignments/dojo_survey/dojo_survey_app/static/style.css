@@ -1,0 +1,8 @@
+#wrapper{
+    margin: 5px auto;
+    width: 400px;
+    text-align: center;
+    font-family: sans-serif;
+    border: 1px solid black;
+    min-height: 500px;
+}
